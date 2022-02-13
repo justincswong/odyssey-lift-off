@@ -1,26 +1,17 @@
 const {ApolloServer} = require('apollo-server');
 const typeDefs = require('./schema');
+const resolvers = require('./resolvers');
+const TrackAPI = require('./datasources/track-api');
 
-const mocks = {
-    Query: () => ({
-        tracksForHome: () => [...new Array(6)]
-    }),
-    Track: () => ({
-        id: () => 'track_01',
-        title: () => 'Hachibee',
-        author: () => {
-            return {
-                name: 'Killer Bee',
-                photo: 'https://static.wikia.nocookie.net/naruto-bleach-and-sonic/images/3/36/Killer_Bee.png/revision/latest?cb=20140824165856'
-            }
-        },
-        thumbnail: () => 'http://shorturl.at/cdfxK',
-        length: () => 2,
-        modulesCount: () => 1
-    })
-}
-
-const server = new ApolloServer({ typeDefs, mocks });
+const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    dataSources: () => {
+        return {
+            trackAPI: new TrackAPI()
+        };
+    }
+});
 
 server.listen().then(() => {
     console.log(`
